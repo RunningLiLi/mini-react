@@ -14,6 +14,7 @@ export default {
     },
   ],
   plugins: [
+    livereload(),
     nodeResolve({
       extensions: [".js", ".ts", ".tsx", ".jsx"],
     }),
@@ -44,7 +45,6 @@ export default {
         "@babel/preset-react",
       ],
     }),
-    livereload(),
     // terser(),
   ],
 };

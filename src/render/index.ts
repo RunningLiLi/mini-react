@@ -39,6 +39,7 @@ function performUnitOfWork(currentUnitOfWork: fiber): fiber | null {
   ) {
     currentUnitOfWork.dom = createDom(currentUnitOfWork);
   }
+
   reconcileChildren(
     currentUnitOfWork,
     currentUnitOfWork.props.children,

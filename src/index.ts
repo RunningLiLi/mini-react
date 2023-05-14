@@ -1,16 +1,15 @@
 import { createElement } from "@/createElement";
 import { mrElement } from "@/type";
 import render from "@/render";
-import { test, test2 } from "./test";
-let value = 0;
+import { test } from "./test";
+let value = 10;
 function reRender() {
-  console.log(11111);
-  render(test(value++, reRender), document.querySelector("#app"));
+  render(test(++value, reRender, reRender2), document.querySelector("#app"));
 }
-render(test(value, reRender), document.querySelector("#app"));
-setTimeout(() => {
-  render(test(999, reRender), document.querySelector("#app"));
-}, 100);
+function reRender2() {
+  render(test(--value, reRender, reRender2), document.querySelector("#app"));
+}
+render(test(value, reRender, reRender2), document.querySelector("#app"));
 declare global {
   function createElement(
     type: string,

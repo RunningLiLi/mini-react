@@ -8,9 +8,11 @@ function createElement(
     type,
     props: {
       ...props,
-      children: children.map((child) =>
-        typeof child === "object" ? child : createTextElement(child)
-      ),
+      children: children
+        .map((child) =>
+          typeof child === "object" ? child : createTextElement(child)
+        )
+        .flat(),
     },
   };
 }
