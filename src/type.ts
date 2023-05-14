@@ -12,10 +12,22 @@ interface mrTextElement {
     children: [];
   };
 }
+type element = mrElement | mrTextElement;
+type elements = element[];
 interface fiber extends mrElement {
   parent?: fiber;
-  dom: Element | Text | null;
-  child?: fiber | null;
-  sibling?: fiber | null;
+  dom: addNull<Element | Text>;
+  child?: addNull<fiber>;
+  sibling?: addNull<fiber>;
+  alternate?: addNull<fiber>;
+  effectTag?: "UPDATE" | "PLACEMENT" | "DELETION";
 }
-export { mrElement, mrTextElement, fiber };
+type addNull<T> = T | null;
+export {
+  mrElement,
+  mrTextElement,
+  fiber,
+  elements,
+  element,
+  PropsWithChildren,
+};

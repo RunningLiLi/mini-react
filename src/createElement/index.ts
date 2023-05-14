@@ -1,4 +1,4 @@
-import { mrElement, mrTextElement } from "../type";
+import { mrElement, mrTextElement } from "@/type";
 function createElement(
   type: string,
   props: object,

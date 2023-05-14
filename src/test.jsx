@@ -2,14 +2,11 @@
 import { createElement } from "./createElement";
 import render from "./render";
 /** @jsx createElement */
-export function test() {
-  for (let i = 0; i < 10000; i++) {
-    console.log(1);
-  }
+export function test(value, func) {
   return (
     <div>
-      <h1>hello</h1>
-      <h2>world</h2>
+      <h1 onClick={func}>hello</h1>
+      <h2>world,{value}</h2>
     </div>
   );
 }

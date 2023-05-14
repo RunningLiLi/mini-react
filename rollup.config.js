@@ -2,6 +2,7 @@ import typescript from "rollup-plugin-typescript2";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import { babel } from "@rollup/plugin-babel";
+import livereload from "rollup-plugin-livereload";
 import { terser } from "rollup-plugin-terser";
 import path from "path";
 export default {
@@ -43,6 +44,7 @@ export default {
         "@babel/preset-react",
       ],
     }),
+    livereload(),
     // terser(),
   ],
 };
