@@ -6,17 +6,28 @@ function commitRoot(wipRoot: fiber, deletions: fiber[]) {
 }
 function commitWork(fiber: fiber) {
   if (!fiber) return;
-  const domParent = fiber.parent.dom;
+  let fiberParent = fiber.parent;
+  while (!fiberParent.dom) {
+    fiberParent = fiberParent.parent;
+  }
+  const domParent = fiberParent.dom;
   if (fiber.effectTag === "PLACEMENT" && fiber.dom != null) {
     domParent.appendChild(fiber.dom);
   } else if (fiber.effectTag === "DELETION") {
-    domParent.removeChild(fiber.dom);
+    commitDeletion(fiber, domParent);
   } else if (fiber.effectTag === "UPDATE" && fiber.dom != null) {
     updateDom(fiber.dom, fiber.alternate.props, fiber.props);
   }
   // fiber.parent && fiber.parent.dom.appendChild(fiber.dom);
   fiber.child && commitWork(fiber.child);
   fiber.sibling && commitWork(fiber.sibling);
+}
+function commitDeletion(fiber, domParent) {
+  if (fiber.dom) {
+    domParent.removeChild(fiber.dom);
+  } else {
+    commitDeletion(fiber.child, domParent);
+  }
 }
 function updateDom(
   dom: Element | Text,

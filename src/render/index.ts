@@ -1,70 +1,52 @@
 import { fiber, element } from "@/type";
 import { commitRoot } from "@/commit";
 import { reconcileChildren } from "@/reconciliation";
-let nextUnitOfWork: fiber = null;
-let wipRoot: fiber = null;
-let currentRoot: fiber = null;
-let deletions: fiber[] = null;
+import G from "@/globalVariables";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// let {G.nextUnitOfWork,G.wipRoot,G.currentRoot,G.deletions,G.wipFiber,G.hookIndex}=globalVariables
 function render(element: element, container: Element | Text) {
-  wipRoot = {
+  G.wipRoot = {
     type: "root",
     props: {
       children: [element],
     },
     dom: container,
-    alternate: currentRoot,
+    alternate: G.currentRoot,
   };
-  nextUnitOfWork = wipRoot;
-  deletions = [];
+  G.nextUnitOfWork = G.wipRoot;
+  G.deletions = [];
 }
 function workLoop(deadline) {
   let shouldYield = false;
-  while (nextUnitOfWork && !shouldYield) {
-    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+  while (G.nextUnitOfWork && !shouldYield) {
+    G.nextUnitOfWork = performUnitOfWork(G.nextUnitOfWork);
     shouldYield = deadline.timeRemaining() < 1;
   }
-  if (!nextUnitOfWork && wipRoot) {
-    currentRoot = wipRoot;
-    commitRoot(wipRoot, deletions);
-    wipRoot = null;
+  if (!G.nextUnitOfWork && G.wipRoot) {
+    G.currentRoot = G.wipRoot;
+    commitRoot(G.wipRoot, G.deletions);
+    G.wipRoot = null;
   }
   requestIdleCallback(workLoop);
 }
 requestIdleCallback(workLoop);
 function performUnitOfWork(currentUnitOfWork: fiber): fiber | null {
-  if (
-    currentUnitOfWork.type &&
-    currentUnitOfWork.type !== "root" &&
-    !currentUnitOfWork.dom
-  ) {
-    currentUnitOfWork.dom = createDom(currentUnitOfWork);
+  if (typeof currentUnitOfWork.type === "function") {
+    G.wipFiber = currentUnitOfWork;
+    G.wipFiber.hooks = [];
+    G.hookIndex = { value: 0 };
+    const element = currentUnitOfWork.type();
+    reconcileChildren(currentUnitOfWork, element.props.children, G.deletions);
+  } else {
+    if (!currentUnitOfWork.dom) {
+      currentUnitOfWork.dom = createDom(currentUnitOfWork);
+    }
+    reconcileChildren(
+      currentUnitOfWork,
+      currentUnitOfWork.props.children,
+      G.deletions
+    );
   }
-
-  reconcileChildren(
-    currentUnitOfWork,
-    currentUnitOfWork.props.children,
-    deletions
-  );
-  //会导致出现不完整的ui，通过commit阶段一并提交
-  // if (currentUnitOfWork.parent) {
-  //   currentUnitOfWork.parent.dom.appendChild(currentUnitOfWork.dom);
-  // }
-  // let index = 0;
-  // let prevSibling = null;
-  // const elements = currentUnitOfWork.props.children;
-  // while (index < elements.length) {
-  //   const newFiber: fiber = {
-  //     type: elements[index].type,
-  //     parent: currentUnitOfWork,
-  //     props: elements[index].props,
-  //     dom: null,
-  //   };
-  //   !index
-  //     ? (currentUnitOfWork.child = newFiber)
-  //     : (prevSibling.sibling = newFiber);
-  //   prevSibling = newFiber;
-  //   index++;
-  // }
   if (currentUnitOfWork.child) return currentUnitOfWork.child;
   let nextUnitOfWorkTemp = currentUnitOfWork;
   while (nextUnitOfWorkTemp) {
@@ -79,7 +61,7 @@ function createDom(fiber: fiber) {
   const dom =
     fiber.type === "TEXT_ELEMENT"
       ? document.createTextNode("")
-      : document.createElement(fiber.type);
+      : document.createElement(fiber.type as string);
   Object.entries(fiber.props).map(([prop, value]) => {
     if (prop != "children") {
       if (prop.startsWith("on")) {
@@ -96,31 +78,3 @@ function createDom(fiber: fiber) {
 }
 
 export default render;
-//递归式render，无法实现concurren模式
-// function render(element: mrElement | mrTextElement, container: Element|Text) {
-//
-//   const dom = element.type==="TEXT_ELEMENT"?document.createTextNode(""):document.createElement(element.type);
-//   element.props&&Object.entries(element.props).map(([prop, value]) => {
-//     if (prop != "children") {
-//       dom[prop] = value;
-//     }
-//   });
-//   // if(Array.isArray(element)){
-//   //   element.map((value) => {
-//   //     if(typeof value!=="object"){
-//   //       container.appendChild(value);
-//   //     }else{
-//   //       render(element, dom);
-//   //     }
-//   //
-//   //   });
-//   // }
-//   // else{
-//   //   console.log(element)
-//    element.props.children.map((element) => {
-//       render(element, dom);
-//     });
-//   // }
-//
-//   container.appendChild(dom);
-// }

@@ -1,8 +1,9 @@
 interface PropsWithChildren extends Record<string, unknown> {
   children: (mrElement | mrTextElement)[];
 }
+type funComponent = (props?: Record<string, unknown>) => mrElement;
 interface mrElement {
-  type: string;
+  type: string | funComponent;
   props: PropsWithChildren;
 }
 interface mrTextElement {
@@ -21,9 +22,19 @@ interface fiber extends mrElement {
   sibling?: addNull<fiber>;
   alternate?: addNull<fiber>;
   effectTag?: "UPDATE" | "PLACEMENT" | "DELETION";
+  hooks?: { state: unknown }[];
 }
 type addNull<T> = T | null;
+interface globalVariables {
+  nextUnitOfWork: fiber;
+  deletions: fiber[];
+  wipRoot: fiber;
+  currentRoot: fiber;
+  wipFiber: fiber;
+  hookIndex: { value: number };
+}
 export {
+  globalVariables,
   mrElement,
   mrTextElement,
   fiber,

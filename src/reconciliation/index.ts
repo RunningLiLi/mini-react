@@ -44,18 +44,5 @@ function reconcileChildren(
     prevSibling = newFiber;
     index++;
   }
-  //   const newFiber: fiber = {
-  //     type: elements[index].type,
-  //     parent: wipFiber,
-  //     props: elements[index].props,
-  //     dom: null,
-  //     alternate:oldFiber
-  //   };
-  //   !index
-  //     ? (wipFiber.child = newFiber)
-  //     : (prevSibling.sibling = newFiber);
-  //   prevSibling = newFiber;
-  //   index++;
-  // }
 }
 export { reconcileChildren };
