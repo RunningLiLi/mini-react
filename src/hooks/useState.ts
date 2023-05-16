@@ -1,14 +1,13 @@
-import gvs from "@/globalVariables";
+import G from "@/globalVariables";
 // eslint-disable-next-line prefer-const
-// let {wipRoot,gvs.hookIndex,gvs.nextUnitOfWork,gvs.gvs.wipFiber,gvs.currentRoot,gvs.deletions}=globalVariables
+// let {wipRoot,G.hookIndex,G.nextUnitOfWork,G.G.wipFiber,G.currentRoot,G.deletions}=globalVariables
 export default function useState<T>(initialValue: T): [T, (T) => void] {
-  const oldHook = gvs.wipFiber?.alternate?.hooks[gvs.hookIndex.value];
+  const oldHook = G.wipFiber?.alternate?.hooks[G.hookIndex.value];
   let newHook = null;
-
   if (!oldHook) {
-    gvs.wipFiber.hooks[gvs.hookIndex.value] = newHook = { state: initialValue };
+    G.wipFiber.hooks[G.hookIndex.value] = newHook = { state: initialValue };
   } else {
-    gvs.wipFiber.hooks[gvs.hookIndex.value] = newHook = oldHook;
+    G.wipFiber.hooks[G.hookIndex.value] = newHook = oldHook;
   }
   function setState(action: T | ((preValue: T) => T)): void {
     if (typeof action == "function") {
@@ -16,15 +15,16 @@ export default function useState<T>(initialValue: T): [T, (T) => void] {
     } else {
       newHook.state = action;
     }
-    gvs.wipRoot = {
+    G.wipRoot = {
       type: "root",
-      dom: gvs.currentRoot.dom,
-      props: gvs.currentRoot.props,
-      alternate: gvs.currentRoot,
+      dom: G.currentRoot.dom,
+      props: G.currentRoot.props,
+      alternate: G.currentRoot,
     };
-    gvs.nextUnitOfWork = gvs.wipRoot;
-    gvs.deletions = [];
+    G.nextUnitOfWork = G.wipRoot;
+    G.deletions = [];
   }
-  gvs.hookIndex.value++;
+  G.hookIndex.value++;
+
   return [newHook.state, setState];
 }

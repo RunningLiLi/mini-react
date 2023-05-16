@@ -1,32 +1,40 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { createElement } from "./createElement";
-import useState from "./hooks/useState";
+import { useReducer, useState } from "./hooks";
 // import React from "react";
 /** @jsx createElement */
-export function Test(value, reRender1, reRender2) {
-  let [num, setNum] = useState(2);
+export function Counter() {
+  let [num, setNum] = useState(1);
   return (
     <div>
-      <Test2 />
-      <h1 onClick={reRender1}>hello,</h1>
-      <h2 onClick={reRender2}>world,{value}</h2>
+      <h2>counter1,{num}</h2>
+      <button onClick={() => setNum(++num)}>+</button>
+      <button onClick={() => setNum(--num)}>-</button>
       <div>
-        {Array(value)
+        {Array(num)
           .fill(0)
           .map((v, k) => {
             return <h4>{k}</h4>;
           })}
       </div>
-      <h3>footer</h3>
+      <Counter2 />
     </div>
   );
 }
-export function Test2() {
+export function Counter2() {
   let [num, setNum] = useState(1);
+  let [state, dispatch] = useReducer((preValue) => ++preValue, 10);
   return (
     <div>
-      <h1>hello2!{num}</h1>
-      <h2 onClick={() => setNum(num++)}>world2</h2>
+      <h2>
+        counter2,num:{num},state:{state}
+      </h2>
+      useState:
+      <button onClick={() => setNum(++num)}>+</button>
+      <button onClick={() => setNum(--num)}>-</button>
+      useReducer:
+      <button onClick={dispatch}>+</button>
+      <button onClick={dispatch}>-</button>
     </div>
   );
 }

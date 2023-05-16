@@ -1,7 +1,7 @@
 import { mrElement, mrTextElement } from "@/type";
 function createElement(
   type: string,
-  props: object,
+  props: object = {},
   ...children: (mrElement | mrTextElement)[]
 ): mrElement {
   return {
